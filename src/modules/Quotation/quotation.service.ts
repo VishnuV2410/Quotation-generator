@@ -31,9 +31,9 @@ export class QuotationService {
                 where: { id: quotation_id },
                 include: [
                     { association: "quotation_items" }
-                ], 
+                ],
             })
-            let modifiedListData =[]
+            let modifiedListData = []
             let i = 1
             for (let singleData of getQuotationData[0].quotation_items) {
                 let obj = {}
@@ -45,15 +45,15 @@ export class QuotationService {
                 modifiedListData.push(obj)
             }
 
-            let  modifiedOverAllData = await Promise.all(getQuotationData.map(async singleData=>{
+            let modifiedOverAllData = await Promise.all(getQuotationData.map(async singleData => {
                 return {
                     ...singleData.dataValues,
                     doc_date: moment(singleData.doc_date).format('DD-MMM-YYYY'),
-                    quotation_items:modifiedListData
+                    quotation_items: modifiedListData
                 }
             }))
-           
-           
+
+
             return responseMessageGenerator('success', 'data fetched successfully', modifiedOverAllData[0])
 
         } catch (error) {
@@ -69,7 +69,7 @@ export class QuotationService {
                 return userData?.user_name
             }
 
-            let getQuotationData = await this.QuotationFormModel.findAll({order:[['id','DESC']]})
+            let getQuotationData = await this.QuotationFormModel.findAll({ order: [['id', 'DESC']] })
             let modifiedData = await Promise.all(getQuotationData.map(async singleData => {
                 return {
                     id: singleData.id,
@@ -107,19 +107,19 @@ export class QuotationService {
             QuotationForm.sub_total = totalAmount
             QuotationForm.grand_total = totalAmount
             let createQuotation = await this.QuotationFormModel.create(QuotationForm)
-           
+
             if (createQuotation) {
                 let quotationId = createQuotation.id
-               
+
                 for (let singleData of getTempQuotationList) {
                     let obj = {}
                     Object.assign(obj, {
                         ...singleData.dataValues,
                         quotation_id: quotationId
                     })
-                   
+
                     let createQuotation = await this.QuotationListModel.create(obj)
-                     
+
                 }
             }
             //reset the temp data
@@ -390,7 +390,7 @@ export class QuotationService {
         }
     }
 
-    
+
     /*helper function*/
     async numberToWord(num) {
         const singleDigits = [

@@ -363,7 +363,6 @@ export class QuotationService {
 
         }
     }
-
     async getSingleQuotationList(record_id: number): Promise<any> {
         try {
 
@@ -391,6 +390,7 @@ export class QuotationService {
         }
     }
 
+    
     /*helper function*/
     async numberToWord(num) {
         const singleDigits = [

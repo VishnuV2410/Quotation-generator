@@ -134,7 +134,7 @@ export class SalesInvoiceService {
                         attributes: ["item_number", "description", "quantity", "units"],
                         order: [["id", "ASC"]]
                     })
-        
+                    InvoiceForm.is_record_saved = true;
                     let createSalesInvoice = await this.SalesInvoiceFormModel.create(InvoiceForm)
         
                     if (createSalesInvoice) {
@@ -398,30 +398,27 @@ export class SalesInvoiceService {
                                 "quantity","units"  ]}
                         ],
                     })
-                    let isRecordExists = await this.SalesInvoiceFormModel.findOne({where:{quotation_id:getQuotationData[0].id,customer_name:getQuotationData[0].customer_name}})
+                    let sales_doc_number = (await this.quotationService.generateDynamicDocNumber(documentType.Sales))?.data
+                    let isRecordExists = await this.SalesInvoiceFormModel.findAll({where:{quotation_id:getQuotationData[0].id,doc_number:sales_doc_number,customer_name:getQuotationData[0].customer_name}})
+                    let createSalesInvoice 
                     if(isRecordExists){
-                        getQuotationData = await Promise.all(getQuotationData.map(singleData =>{
-                            return { 
-                                ...singleData.dataValues,
-                                quotation_id:singleData.dataValues.id
-                          }
-                          }))
+                        createSalesInvoice =isRecordExists[0]
                     }else{
-    
-                        let dc_doc_number = (await this.quotationService.generateDynamicDocNumber(documentType.Sales))?.data
                         getQuotationData = await Promise.all(getQuotationData.map(singleData =>{
                            return { 
                                ...singleData.dataValues,
-                               doc_number:dc_doc_number,
-                               quotation_id:singleData.dataValues.id
+                               doc_number:sales_doc_number,
+                               quotation_id:singleData.dataValues.id,
+                               is_form_move_forward:true
                          }
                          }))
-                        delete getQuotationData[0]['id']
+                         delete getQuotationData[0]['id']
+                         createSalesInvoice= await this.SalesInvoiceFormModel.create(getQuotationData[0])
     
                     }
                     
                      
-                    let [createSalesInvoice,update] = await this.SalesInvoiceFormModel.upsert({id:isRecordExists?.id,...getQuotationData[0]})
+                    
                 
                     for (let singleData of getQuotationData[0].quotation_items) {
                         let doc_number = createSalesInvoice.doc_number

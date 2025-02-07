@@ -243,6 +243,12 @@ export class QuotationService {
             let Quotation = await repoObject[doc_type].findOne({ where:{doc_number:{[Op.not]:null}}, order: [["id", "DESC"]] })
            
             if (Quotation) {
+
+                if(doc_type=="delivery" &&  Quotation?.is_form_move_forward && Quotation?.is_record_saved == false){
+                    docNumber = Quotation?.doc_number
+                }else if(doc_type=="sales" &&  Quotation?.is_form_move_forward && Quotation?.is_record_saved == false){
+                    docNumber = Quotation?.doc_number
+                }else{
                 let incrementDocNumber
                 if (Quotation.doc_number != null) {
                     let docNum =  Quotation.doc_number
@@ -255,6 +261,7 @@ export class QuotationService {
                     incrementDocNumber = await this.incrementLastDigit(docNum)
                 }
                 docNumber = incrementDocNumber
+             }
             } else {
                 docNumber = getDocumentData?.doc_number
             }

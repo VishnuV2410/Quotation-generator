@@ -59,6 +59,12 @@ export class deliveryChallanRepository extends Model <InferCreationAttributes<de
     @Column({defaultValue:0})
     revision_count:number
 
+    @Column({defaultValue:false})
+    is_form_move_forward:boolean
+
+    @Column({defaultValue:false})
+    is_record_saved:boolean
+
     @BelongsTo(()=>UserRepository,{as:"users",foreignKey:'created_user_id'})
     users:UserRepository
     @ForeignKey(()=>UserRepository)
